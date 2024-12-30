@@ -1,0 +1,251 @@
+/* :root {
+    --primary-color: #2C3E50;
+    --secondary-color: #18BC9C;
+    --background-color: #ECF0F1;
+    --font-color: #34495E;
+    --error-color: #E74C3C;
+    --success-color: #27AE60;
+    --border-radius: 5px;
+    --font-family: 'Roboto', sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--font-color);
+  }
+  
+  .book-session-container {
+    background: white;
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 40px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+  }
+  
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .form-group input,
+  .form-group .react-datepicker-wrapper input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border 0.3s ease;
+  }
+  
+  .form-group input:focus,
+  .form-group .react-datepicker-wrapper input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 5px rgba(24, 188, 156, 0.5);
+  }
+  
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  button.submit-button {
+    background-color: var(--secondary-color);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 12px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+  }
+  
+  button.submit-button:hover {
+    background-color: #16a085;
+  }
+  
+  button.submit-button:active {
+    transform: scale(0.98);
+  }
+  
+  .error-message,
+  .success-message {
+    margin-top: 20px;
+    text-align: center;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+  }
+  
+  .error-message {
+    background-color: var(--error-color);
+    color: white;
+  }
+  
+  .success-message {
+    background-color: var(--success-color);
+    color: white;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .book-session-container {
+      padding: 20px;
+    }
+  
+    h2 {
+      font-size: 1.5rem;
+    }
+  } */
+/* General Container */
+.book-session-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #28003d, #400050, #1a0144);
+  min-height: 100vh;
+
+  padding: 20px;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+/* Title */
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+ 
+  letter-spacing: 2px;
+  color: #ffffff;
+}
+
+/* Booking Form */
+.booking-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+  gap: 20px 40px; /* Uniform row and column gaps */
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+ 
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"] {
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #e0dfdf;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus {
+  border-color: #9333ea;
+  outline: none;
+  box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+}
+
+/* Submit Button */
+.submit-button {
+  background: linear-gradient(90deg, #9333ea, #c633ff);
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 20px;
+  width: 220px; /* Reduce the width */
+  transition: all 0.3s ease-in-out;
+  grid-column: span 2; /* Center button across both columns */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;  /* Center the button */
+  margin-right: auto; /* Center the button */
+}
+
+.submit-button:hover {
+  background: linear-gradient(90deg, #b100ff, #e970ff);
+  box-shadow: 0 4px 15px rgba(177, 0, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Error and Success Messages */
+.error-message,
+.success-message {
+  grid-column: span 2; /* Span across both columns */
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.error-message {
+  color: #ff4c4c;
+}
+
+.success-message {
+  color: #4caf50;
+}
+
+/* DatePicker Styling */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #9333ea;
+  box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+}
