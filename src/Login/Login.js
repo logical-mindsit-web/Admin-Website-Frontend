@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/api.js";
-import roboImg from "../assets/mainrobo.png";
+import roboImg from "../assets/robo.png";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
@@ -55,7 +55,7 @@ export default function Login() {
     <div
       style={{
         ...styles.black,
-        background: radial-gradient(`circle at ${cursorPos.x}px ${cursorPos.y}px, #C900B1 , #06DDE5, black 10%`),
+        background: `radial-gradient(circle at ${cursorPos.x}px ${cursorPos.y}px,rgb(238, 124, 225)  , black 15%)`,
       }}
     >
       <div style={styles.container}>
