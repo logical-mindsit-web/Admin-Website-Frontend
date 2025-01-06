@@ -297,7 +297,7 @@ export default function CreateUser(){
                   style={{ width: "100%", padding: "10px", margin: "5px 0", borderRadius: "5px" }}
                 />
                 {subIndex > 0 && (
-                  <button type="button" onClick={() => removeSubLocation(index, subIndex)} style={{ marginTop: "10px" }}>
+                  <button type="button" onClick={() => removeSubLocation(index, subIndex)} style={{ padding: "10px 20px", backgroundColor: "#F8F8FF", color: "red", borderRadius: "5px", border: "black" }}>
                     Remove Sub-Location
                   </button>
                 )}
@@ -308,14 +308,14 @@ export default function CreateUser(){
             </button>
 
             {locations.length > 1 && (
-              <button type="button" onClick={() => removeLocation(index)} style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", borderRadius: "5px", border: "none" }}>
+              <button type="button" onClick={() => removeLocation(index)} style={{ padding: "10px 20px", backgroundColor: "#F8F8FF", color: "red", borderRadius: "5px", border: "black",marginLeft: "8px" }}>
                 Remove Location
               </button>
             )}
           </div>
         ))}
 
-        <button type="button" onClick={addLocation} style={{ marginTop: "10px" }}>
+        <button type="button" onClick={addLocation} style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", borderRadius: "5px", border: "none" }}>
           Add Location
         </button>
 
