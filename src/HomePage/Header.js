@@ -37,8 +37,8 @@ const Header = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("email");
     setIsLoggedIn(false);
-    window.location.href = "https://spotless-ai.s3.ap-south-1.amazonaws.com/SpotlessAI-Website/index.html"; // Redirect after logout
-    };
+    window.location.href = "https://spotless-ai.s3.ap-south-1.amazonaws.com/SpotlessAI-Website/index.html";
+     };
 
   const handleProfileClick = () => {
     const token = localStorage.getItem('token');

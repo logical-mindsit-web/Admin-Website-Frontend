@@ -1,36 +1,29 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate without BrowserRouter
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Header from './HomePage/Header';
-import AfterLoginRoutes from "./Routes/AfterLoginRoutes "
-import Footer from "./HomePage/Fooder";
+import Footer from './HomePage/Fooder';
+import AfterLoginRoutes from './Routes/AfterLoginRoutes ';
+
 
 const App = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // If user is authenticated, automatically navigate to /card page
-      navigate("/card");
-    } else {
-      navigate("/");
-    }
-  }, [navigate]);
-
   const isAuthenticated = () => {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    return !!token;
   };
-
   return (
-    <div style={styles.app}>
+    <Router>
+      <div style={styles.app}>
       {isAuthenticated() && <Header />}
-      <div style={styles.content}>
-        <AfterLoginRoutes />
-        {isAuthenticated() && <Footer />}
+        <div style={styles.content}>
+         
+           <AfterLoginRoutes />
+        
+        </div>
+        <Footer/>
       </div>
-    </div>
+    </Router>
   );
-};
+}
 
 const styles = {
   app: {
@@ -40,8 +33,53 @@ const styles = {
   },
   content: {
     flex: 1,
+    // paddingBottom: '60px',
     position: 'relative',
   },
 };
 
 export default App;
+
+
+
+
+// import React from 'react';
+// import { BrowserRouter as Router } from 'react-router-dom';
+
+// import Header from './HomePage/Header';
+// import Footer from './HomePage/Fooder';
+// import BeforeLoginRoutes from './Routes/BeforeLoginRoutes ';
+// import AfterLoginRoutes from './Routes/AfterLoginRoutes ';
+
+
+
+// const App = () => {
+//   return (
+//     <Router>
+//       <div style={styles.app}>
+//         <Header /> // navbar
+//         <div style={styles.content}>
+//            <BeforeLoginRoutes />
+//            <AfterLoginRoutes />
+      
+//         </div>
+//         <Footer /> //footer
+//       </div>
+//     </Router>
+//   );
+// }
+
+// const styles = {
+//   app: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     minHeight: '100vh',
+//   },
+//   content: {
+//     flex: 1,
+//     paddingBottom: '60px',  // Ensure space for footer
+//     position: 'relative',
+//   },
+// };
+
+// export default App;
