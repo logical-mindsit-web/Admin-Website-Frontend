@@ -39,18 +39,17 @@ const TicketForm = () => {
   const handleInputChange = (index, e) => {
     const values = [...entries];
     values[index][e.target.name] = e.target.value;
-
-    if (e.target.name === "ticketNo") {
-      // Check if ticket number is unique
-      const newTicketNumbers = new Set(ticketNumbers);
-      if (newTicketNumbers.has(e.target.value)) {
-        alert("Ticket number must be unique!");
-        return; // Prevent the change if ticket number is not unique
+  
+    if (e.target.name === 'ticketNo') {
+      const ticketNos = values.map(entry => entry.ticketNo);
+      const duplicates = ticketNos.filter((item, idx) => ticketNos.indexOf(item) !== idx);
+  
+      if (duplicates.length > 0) {
+        alert('Ticket numbers should not be the same!');
+        values[index][e.target.name] = ''; // Clear the conflicting input
       }
-      newTicketNumbers.add(e.target.value);
-      setTicketNumbers(newTicketNumbers);
     }
-
+  
     setEntries(values);
   };
 
