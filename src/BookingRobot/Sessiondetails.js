@@ -1,107 +1,134 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/api";
-import { Button, Snackbar, Alert } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import "./loadingStyles.css";
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableContainer,
+  Typography,
+  Alert,
+  Button,
+  IconButton,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Download as DownloadIcon } from "@mui/icons-material"; // MUI icon for download
 
-const AllSessions = () => {
+const SessionsTable = () => {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "",
-  });
-  const navigate = useNavigate();
-
-  const showSnackbar = (message, severity = "info") => {
-    setSnackbar({ open: true, message, severity });
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ open: false, message: "", severity: "" });
-  };
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchSessions = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("Authentication token is missing. Please log in.");
-        setLoading(false);
-        return;
-      }
       try {
-        const response = await axios.get("/sessions", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSessions(response.data.data);
+        const response = await axios.get("/sessions");
+        if (response.data.success) {
+          setSessions(response.data.data);
+        } else {
+          setError("Failed to fetch sessions.");
+        }
       } catch (err) {
-        setError(err.response?.data?.message || "An error occurred");
+        setError("An error occurred while fetching sessions.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchSessions();
   }, []);
 
-  const handleConform = async (session) => {
+  const handleConfirm = async (sessionId) => {
     try {
-      const token = localStorage.getItem("token"); // Ensure token for authentication
-      const response = await axios.post(
-        `/sessions/${session._id}/conform`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Update session status in state immediately after success
-      setSessions((prevSessions) =>
-        prevSessions.map((s) =>
-          s._id === session._id ? { ...s, status: "conformed" } : s
-        )
-      );
-      showSnackbar(response.data.message, "success");
+      const response = await axios.patch("/sessions/status", {
+        sessionId,
+        status: "conformed", // Set status to 'conformed'
+      });
+
+      if (response.data.success) {
+        // Update the session state to reflect the change
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session._id === sessionId
+              ? {
+                  ...session,
+                  customer: { ...session.customer, status: "conformed" },
+                }
+              : session
+          )
+        );
+      }
     } catch (error) {
-      showSnackbar(
-        error.response?.data?.message || "Error conforming the session",
-        "error"
-      );
+      console.error("Error confirming session:", error.message);
     }
   };
 
-  const handleReject = async (session) => {
+  const handleReject = async (sessionId) => {
     try {
-      const token = localStorage.getItem("token"); // Ensure token for authentication
-      const response = await axios.post(
-        `/sessions/${session._id}/reject`,
-        { reason: "Session date unavailable" }, // Include rejection reason
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Update session status in state immediately after success
-      setSessions((prevSessions) =>
-        prevSessions.map((s) =>
-          s._id === session._id ? { ...s, status: "rejected" } : s
-        )
-      );
-      showSnackbar(response.data.message, "success");
+      const response = await axios.patch("/sessions/status", {
+        sessionId,
+        status: "rejected", // Set status to 'rejected'
+      });
+
+      if (response.data.success) {
+        // Update the session state to reflect the change
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session._id === sessionId
+              ? {
+                  ...session,
+                  customer: { ...session.customer, status: "rejected" },
+                }
+              : session
+          )
+        );
+      }
     } catch (error) {
-      showSnackbar(
-        error.response?.data?.message || "Error rejecting the session",
-        "error"
-      );
+      console.error("Error rejecting session:", error.message);
     }
   };
 
-  const handleViewDetails = (session) => {
-    const decodeEmail = encodeURIComponent(btoa(session.email));
-    navigate(`/session-details/${decodeEmail}`);
+  const handleRowClick = (sessionId) => {
+    // Navigate to the customer details page
+    navigate(`/sessions/${sessionId}`);
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      "Received Date",
+      "Name",
+      "Company Name",
+      "Email",
+      "Mobile",
+      "Address",
+      "Booking Date",
+      "Status",
+    ];
+    const rows = sessions.map((session) => [
+      new Date(session.createdAt).toLocaleDateString("en-GB"),
+      session.customer.name,
+      session.customer.companyName,
+      session.customer.email,
+      session.customer.mobileNumber,
+      session.customer.address,
+      new Date(session.customer.bookedDate).toLocaleDateString("en-GB"),
+      session.customer.status,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "sessions.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (loading) {
@@ -117,163 +144,155 @@ const AllSessions = () => {
       </div>
     );
   }
-  if (error) return <div>Error: {error}</div>;
-  if (sessions.length === 0) return <div>No sessions available</div>;
+
+  if (error)
+    return (
+      <Alert severity="error" style={{ marginTop: "20px" }}>
+        {error}
+      </Alert>
+    );
+
+  if (sessions.length === 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+        }}
+      >
+        <Typography variant="h6" color="textSecondary">
+          No data available.
+        </Typography>
+      </div>
+    );
+  }
+
+  const cellStyle = {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "150px",
+    border: "1px solid #ccc",
+    padding: "8px",
+    fontSize: "14px",
+    textAlign: "center",
+  };
+
+  const headerStyle = {
+    ...cellStyle,
+    fontWeight: "bold",
+    backgroundColor: "#f5f5f5",
+  };
 
   return (
-    <div className="sessions-container">
-      <h1>All Booked Sessions</h1>
-      <table className="sessions-table">
-        <thead>
-          <tr>
-            <th>Received Date</th>
-            <th>Name</th>
-            <th>Company Name</th>
-            <th>Email</th>
-            <th>Mobile</th>
-            <th>Address</th>
-            <th>Booking Date</th>
-            <th>Reply Mail</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map((session) => (
-            <tr
-              key={session._id}
-              onClick={() => handleViewDetails(session)} // Click row to navigate to details page
-              style={{ cursor: "pointer" }} // Make the row look clickable
-            >
-              <td>{new Date(session.bookedAt).toLocaleDateString('en-GB')}</td>
-              <td>{session.name}</td>
-              <td>{session.companyName}</td>
-              <td>{session.email}</td>
-              <td>{session.mobile}</td>
-              <td>{session.address}</td>
-              <td>{new Date(session.date).toLocaleDateString('en-GB')}</td>
-              <td>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    justifyContent: "center",
-                  }}
-                >
-                  {session.status === "conformed" ? (
-                    <span style={{ fontSize: "20px", color: "green" }}>✔</span>
-                  ) : session.status === "rejected" ? (
-                    <span style={{ fontSize: "20px", color: "red" }}>❌</span>
-                  ) : (
+    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Sessions List
+        </Typography>
+        <IconButton onClick={downloadCSV} color="primary" disabled={sessions.length === 0}>
+          <DownloadIcon />
+        </IconButton>
+      </div>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell style={headerStyle}>Received Date</TableCell>
+              <TableCell style={headerStyle}>Name</TableCell>
+              <TableCell style={headerStyle}>Company Name</TableCell>
+              <TableCell style={headerStyle}>Email</TableCell>
+              <TableCell style={headerStyle}>Mobile</TableCell>
+              <TableCell style={headerStyle}>Address</TableCell>
+              <TableCell style={headerStyle}>Booking Date</TableCell>
+              <TableCell style={headerStyle}>Reply Mail</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sessions.map((session) => (
+              <TableRow
+                key={session._id}
+                hover
+                onClick={() => handleRowClick(session._id)}
+                style={{ cursor: "pointer" }}
+              >
+                <TableCell style={cellStyle}>
+                  {new Date(session.createdAt).toLocaleDateString("en-GB")}
+                </TableCell>
+                <TableCell style={cellStyle}>{session.customer.name}</TableCell>
+                <TableCell style={cellStyle}>
+                  {session.customer.companyName}
+                </TableCell>
+                <TableCell style={cellStyle}>
+                  {session.customer.email}
+                </TableCell>
+                <TableCell style={cellStyle}>
+                  {session.customer.mobileNumber}
+                </TableCell>
+                <TableCell style={cellStyle}>
+                  {session.customer.address}
+                </TableCell>
+                <TableCell style={cellStyle}>
+                  {new Date(session.customer.bookedDate).toLocaleDateString(
+                    "en-GB"
+                  )}
+                </TableCell>
+                <TableCell style={cellStyle}>
+                  {session.customer.status === "pending" && (
                     <>
                       <Button
                         variant="contained"
-                        className="green-btn"
+                        color="primary"
+                        size="small"
+                        style={{ marginRight: "8px" }}
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click event
-                          handleConform(session);
+                          e.stopPropagation();
+                          handleConfirm(session._id);
                         }}
                       >
-                        Conform
+                        Confirm
                       </Button>
                       <Button
                         variant="contained"
-                        className="red-btn"
+                        color="secondary"
+                        size="small"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click event
-                          handleReject(session);
+                          e.stopPropagation();
+                          handleReject(session._id);
                         }}
                       >
                         Reject
                       </Button>
                     </>
                   )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-
-      <style jsx>{`
-        .green-btn,
-        .red-btn {
-          padding: 6px 12px;
-          font-size: 10px;
-        }
-        .sessions-container {
-          padding: 20px;
-          overflow-x: auto;
-        }
-        .sessions-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
-          table-layout: fixed;
-        }
-        .sessions-table th,
-        .sessions-table td {
-          padding: 10px;
-          text-align: center;
-          border: 1px solid #ddd;
-          max-width: 200px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .sessions-table th {
-          background-color: #f4f4f4;
-        }
-        .sessions-table td {
-          background-color: #fff;
-        }
-        .sessions-table tr:hover {
-          background-color: #f1f1f1;
-        }
-        .sessions-table td {
-          word-wrap: break-word;
-        }
-        .sessions-table .green-btn {
-          background-color: green;
-          color: white;
-        }
-        .sessions-table .red-btn {
-          background-color: red;
-          color: white;
-        }
-
-        @media (max-width: 768px) {
-          .sessions-table {
-            width: 100%;
-            display: block;
-          }
-          .sessions-table th,
-          .sessions-table td {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 10px 5px;
-            border: none;
-          }
-          .sessions-table td {
-            word-wrap: break-word;
-          }
-        }
-      `}</style>
+                  {session.customer.status === "conformed" && (
+                    <Typography variant="body2" color="success.main">
+                      Confirmed
+                    </Typography>
+                  )}
+                  {session.customer.status === "rejected" && (
+                    <Typography variant="body2" color="error.main">
+                      Rejected
+                    </Typography>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
 
-export default AllSessions;
+export default SessionsTable;

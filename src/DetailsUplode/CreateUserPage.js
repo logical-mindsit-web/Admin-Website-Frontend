@@ -303,7 +303,7 @@ export default function CreateUser(){
                 )}
               </div>
             ))}
-            <button type="button" onClick={() => addSubLocation(index)} style={{ marginTop: "10px" }}>
+            <button type="button" onClick={() => addSubLocation(index)}  style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", borderRadius: "5px", border: "none" }}>
               Add Sub-Location
             </button>
 

@@ -67,11 +67,11 @@ const Header = () => {
         </div>
         <nav style={styles.nav}>
           <ul style={styles.navList}>
-            {/*<li style={styles.navItem}>
-              <Link to="/" style={styles.navLink}>
-                Home
+          <li style={styles.navItem}>
+              <Link to="/Employeecard" style={styles.navLink}>
+                Employee Data
               </Link>
-            </li>*/}
+            </li>
             <li style={styles.navItem}>
               <Link to="/card-global" style={styles.navLink}>
                Global Settings

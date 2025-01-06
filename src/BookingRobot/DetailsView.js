@@ -1,109 +1,78 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/api";
-import { useParams } from "react-router-dom"; // To extract email from URL params
-import { Card, CardContent, Typography, IconButton, Button ,Snackbar,Alert} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Divider,
+  Button,
+  IconButton,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import "./loadingStyles.css";
 
-const SessionDetails = () => {
-  const { email } = useParams(); // Extract the email from the URL
-  const [sessionDetails, setSessionDetails] = useState(null);
+const CustomerDetails = () => {
+  const { id } = useParams(); // Get session ID from the URL
+  const navigate = useNavigate(); // Use navigate hook for back navigation
+  const [customerData, setCustomerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "",
-  });
-  const navigate = useNavigate();
-
-  const showSnackbar = (message, severity = "info") => {
-    setSnackbar({ open: true, message, severity });
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ open: false, message: "", severity: "" });
-  };
-
-  const decodeEmail = (encodedEmail) => {
-    return atob(decodeURIComponent(encodedEmail));
-  };
 
   useEffect(() => {
-    const fetchSessionDetails = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("Authentication token is missing. Please log in.");
-        setLoading(false);
-        return;
-      }
+    const fetchCustomerData = async () => {
       try {
-        const decodedEmail = decodeEmail(email);
-        const response = await axios.get(`https://spotlessai-backend.onrender.com/sessions/${decodedEmail}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSessionDetails(response.data.data);
+        const response = await axios.get(`/sessions/${id}`);
+        if (response.data.success) {
+          setCustomerData(response.data.data);
+        } else {
+          setError("Failed to fetch customer data.");
+        }
       } catch (err) {
-        setError(err.response?.data?.message || "An error occurred");
+        setError("An error occurred while fetching customer data.");
       } finally {
         setLoading(false);
       }
     };
-    fetchSessionDetails();
-  }, [email]);
 
-  const handleConform = async () => {
+    fetchCustomerData();
+  }, [id]);
+
+  const handleConfirm = async () => {
     try {
-      const token = localStorage.getItem("token"); // Ensure token for authentication
-      const response = await axios.post(
-        `/sessions/${sessionDetails[0]._id}/conform`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Update session status in state immediately after success
-      setSessionDetails((prevSessionDetails) =>
-        prevSessionDetails.map((s) =>
-          s._id === sessionDetails[0]._id ? { ...s, status: "conformed" } : s
-        )
-      );
-      showSnackbar(response.data.message, "success");
+      const response = await axios.patch("/sessions/status", {
+        sessionId: id,
+        status: "conformed",
+      });
+
+      if (response.data.success) {
+        setCustomerData((prevData) => ({
+          ...prevData,
+          customer: { ...prevData.customer, status: "conformed" },
+        }));
+      }
     } catch (error) {
-      showSnackbar(
-        error.response?.data?.message || "Error conforming the session",
-        "error"
-      );
+      console.error("Error confirming session:", error.message);
     }
   };
 
   const handleReject = async () => {
     try {
-      const token = localStorage.getItem("token"); // Ensure token for authentication
-      const response = await axios.post(
-        `https://spotlessai-backend.onrender.com/sessions/${sessionDetails[0]._id}/reject`,
-        { reason: "Session date unavailable" }, // Include rejection reason
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Update session status in state immediately after success
-      setSessionDetails((prevSessionDetails) =>
-        prevSessionDetails.map((s) =>
-          s._id === sessionDetails[0]._id ? { ...s, status: "rejected" } : s
-        )
-      );
-      showSnackbar(response.data.message, "success");
+      const response = await axios.patch("/sessions/status", {
+        sessionId: id,
+        status: "rejected",
+      });
+
+      if (response.data.success) {
+        setCustomerData((prevData) => ({
+          ...prevData,
+          customer: { ...prevData.customer, status: "rejected" },
+        }));
+      }
     } catch (error) {
-      showSnackbar(
-        error.response?.data?.message || "Error rejecting the session",
-        "error"
-      );
+      console.error("Error rejecting session:", error.message);
     }
   };
 
@@ -121,124 +90,114 @@ const SessionDetails = () => {
     );
   }
 
-  if (error) return <div>Error: {error}</div>;
-  if (!sessionDetails) return <div>No session details available</div>;
+  if (error)
+    return (
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+      </div>
+    );
 
   return (
-    <div className="session-details-container">
-      <h1 className="centered-heading">Booking Details for {sessionDetails[0]?.name}</h1>
-      <Card className="session-card">
-        <IconButton
-          edge="start"
-          color="inherit"
-          onClick={() => navigate("/Booking-details")}
-          aria-label="back"
-          className="back-arrow-button"
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <CardContent>
-          {sessionDetails.map((session) => (
-            <div key={session._id}>
-              <Typography variant="body1">Name: {session.name}</Typography>
-              <Typography variant="body1">
-                Company: {session.companyName}
-              </Typography>
-              <Typography variant="body1">Email: {session.email}</Typography>
-              <Typography variant="body1">Mobile: {session.mobile}</Typography>
-              <Typography variant="body1">
-                Address: {session.address}
-              </Typography>
-              <Typography variant="body1">
-                Booking Date: {new Date(session.date).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body1">
-                Received Date: {new Date(session.bookedAt).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body1">
-                Booked Until:{" "}
-                {new Date(session.bookedUntil).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body1">
-                Availability:{" "}
-                {session.isAvailable ? "Available" : "Not Available"}
-              </Typography>
-              <Typography variant="body1">
-                Blocked Dates:{" "}
-                {session.blockedDates
-                  .map((date) => new Date(date).toLocaleDateString())
-                  .join(", ")}
-              </Typography>
-            </div>
-          ))}
-        </CardContent>
-
-        {/* Conform and Reject buttons */}
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          {sessionDetails[0]?.status === "conformed" ? (
-            <span style={{ fontSize: "20px", color: "green" }}>✔</span>
-          ) : sessionDetails[0]?.status === "rejected" ? (
-            <span style={{ fontSize: "20px", color: "red" }}>❌</span>
-          ) : (
-            <>
-              <Button
-                variant="contained"
-                style={{ backgroundColor: "green", color: "white" }}
-                onClick={handleConform}
-              >
-                Conform
-              </Button>
-              <Button
-                variant="contained"
-                style={{ backgroundColor: "red", color: "white" }}
-                onClick={handleReject}
-              >
-                Reject
-              </Button>
-            </>
-          )}
-        </div>
-      </Card>
-
-      {/* Snackbar for success or error messages */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-
-      <style jsx>{`
-        .session-details-container {
-          padding: 20px;
-        }
-        .centered-heading {
-          text-align: center; /* Center the heading */
-          margin-bottom: 20px; /* Optional, for spacing */
-        }
-        .session-card {
-          max-width: 600px;
-          margin: auto;
-          margin-bottom: 20px;
-          padding: 20px;
-          position: relative;
-        }
-        .back-arrow-button {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-        }
-      `}</style>
+    <div
+      style={{
+        padding: "40px 20px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        minHeight: "80vh",
+      }}
+    >
+      <Grid container justifyContent="center">
+        <Grid item xs={12} sm={8} md={6}>
+          <Card>
+            <CardHeader
+              title={
+                <Box display="flex" alignItems="center">
+                  <IconButton onClick={() => navigate(-1)}>
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <Typography
+                    variant="h6"
+                    style={{ textAlign: "center", width: "100%" }}
+                  >
+                    Customer Details
+                  </Typography>
+                </Box>
+              }
+              subheader="Information about the customer and their Booking date"
+              style={{ textAlign: "center", backgroundColor: "#f4f6f8" }}
+            />
+            <Divider />
+            <CardContent>
+              {customerData && (
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    Name: {customerData.customer.name}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Email:</strong> {customerData.customer.email}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Mobile:</strong>{" "}
+                    {customerData.customer.mobileNumber}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Company:</strong>{" "}
+                    {customerData.customer.companyName}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Address:</strong> {customerData.customer.address}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Booking Date:</strong>{" "}
+                    {new Date(
+                      customerData.customer.bookedDate
+                    ).toLocaleDateString("en-GB")}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    <strong>Status:</strong> {customerData.customer.status}
+                  </Typography>
+                  {customerData.customer.status === "pending" && (
+                    <Box mt={2}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        style={{ marginRight: "8px" }}
+                        onClick={handleConfirm}
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        onClick={handleReject}
+                      >
+                        Reject
+                      </Button>
+                    </Box>
+                  )}
+                  {customerData.customer.status === "conformed" && (
+                    <Typography variant="body2" color="success.main">
+                      Confirmed
+                    </Typography>
+                  )}
+                  {customerData.customer.status === "rejected" && (
+                    <Typography variant="body2" color="error.main">
+                      Rejected
+                    </Typography>
+                  )}
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </div>
   );
 };
 
-export default SessionDetails;
+export default CustomerDetails;

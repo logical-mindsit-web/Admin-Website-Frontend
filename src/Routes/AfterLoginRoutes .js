@@ -41,6 +41,12 @@ import RobotImage from "../ModelImages/RobotImage"
 import Uplodeimage from "../ModelImages/uplodeimage"
 import Viewimage from "../ModelImages/viewimage"
 
+import Employeecard from "../Employeedata/Employeecard"
+import EmployeeTable from "../Employeedata/EmployeeFiles/EmployeeTable"
+import EmployeeIdForm from "../Employeedata/EmployeeFiles/EmployeeIdForm"
+import TicketForm from "../Employeedata/EmployeeFiles/TicketForm"
+import EmployeeList from "../Employeedata/EmployeeFiles/EmployeeTicketsList"
+
 import Dashboard from "../RobotAnalyticsGraph/Dashboard"
 
 
@@ -112,6 +118,12 @@ const AfterLoginRoutes = () => (
     <Route path="/Viewimage" element={<Viewimage />} />
 
     <Route path="/RobotAnalytics" element={<Dashboard />} />
+
+    <Route path="/Employeecard" element={<Employeecard />} />
+    <Route path="/EmployeeTable" element={<EmployeeTable />} />
+    <Route path="/EmployeeIdForm" element={<EmployeeIdForm />} />
+    <Route path="/TicketForm" element={<TicketForm />} />
+    <Route path="/EmployeeList" element={<EmployeeList/>}/>
 
   </Routes>
 );
