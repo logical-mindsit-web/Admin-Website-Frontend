@@ -104,7 +104,7 @@ const AfterLoginRoutes = () => (
 
     <Route path="/Robot-Booking" element={<BookSession />} />
     <Route path="/Booking-details" element={<Sessiondetails />} />
-    <Route path="/session-details/:email" element={<DetailsView />} />
+    <Route path="/sessions/:id" element={<DetailsView />} />
 
 
     <Route path="/robot-analytics" element={<RobotAnalyticsList1 />} />
