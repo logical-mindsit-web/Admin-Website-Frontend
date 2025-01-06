@@ -19,7 +19,8 @@ const App = () => {
            <AfterLoginRoutes />
         
         </div>
-        <Footer/>
+        {isAuthenticated() && <Footer/>}
+        
       </div>
     </Router>
   );
