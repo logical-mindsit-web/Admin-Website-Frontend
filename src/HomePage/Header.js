@@ -16,7 +16,7 @@ const Header = () => {
       const fetchUserDetails = async () => {
         try {
           const email = localStorage.getItem('email');
-          const response = await axios.get(`/admin-details/${email}`, {
+          const response = await axios.get(`admin-details/${email}`,{
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -37,8 +37,8 @@ const Header = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("email");
     setIsLoggedIn(false);
-    window.location.href = "/";
-  };
+    window.location.href = "https://spotless-ai.s3.ap-south-1.amazonaws.com/SpotlessAI-Website/index.html"; // Redirect after logout
+    };
 
   const handleProfileClick = () => {
     const token = localStorage.getItem('token');
@@ -67,9 +67,9 @@ const Header = () => {
         </div>
         <nav style={styles.nav}>
           <ul style={styles.navList}>
-          <li style={styles.navItem}>
+            <li style={styles.navItem}>
               <Link to="/Employeecard" style={styles.navLink}>
-                Employee Data
+               Employee Data
               </Link>
             </li>
             <li style={styles.navItem}>
@@ -79,16 +79,11 @@ const Header = () => {
             </li>
             <li style={styles.navItem}>
               <span onClick={handleProfileClick} style={{ cursor: 'pointer', color: '#00448e', textDecoration: 'none', fontSize: '1rem' }}>
-                {userDetails.name ? `${userDetails.name} (${userDetails.role})` : 'Profile'}
+                {userDetails.name ? `${userDetails.name} (${userDetails.role})`: 'Profile'}
               </span>
             </li>
           </ul>
-
-          {!isLoggedIn ? (
-            <Link to="/" style={styles.getStartedButton}>
-              Welcome
-            </Link>
-          ) : (
+          {isLoggedIn && (
             <Button
               style={styles.getStartedButton}
               onClick={handleLogout}
