@@ -35,7 +35,7 @@ const EmployeeIdForm = () => {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '400px', margin: 'auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', background: '#f9f9f9', marginTop: '100px' }}>
-      <h2>Uplode Employee ID</h2>
+      <h3 style={{color:"black"}}>Uplode Employee ID</h3>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="employeeId" style={{ marginBottom: '8px' }}>Employee ID:</label>
         <input

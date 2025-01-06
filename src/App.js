@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Header from './HomePage/Header';
+import Footer from './HomePage/Fooder';
 import AfterLoginRoutes from './Routes/AfterLoginRoutes ';
 
 
@@ -18,7 +19,7 @@ const App = () => {
            <AfterLoginRoutes />
         
         </div>
-        
+        <Footer/>
       </div>
     </Router>
   );
