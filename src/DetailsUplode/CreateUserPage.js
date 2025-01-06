@@ -308,7 +308,7 @@ export default function CreateUser(){
             </button>
 
             {locations.length > 1 && (
-              <button type="button" onClick={() => removeLocation(index)} style={{ marginTop: "10px", color: "red" }}>
+              <button type="button" onClick={() => removeLocation(index)} style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", borderRadius: "5px", border: "none" }}>
                 Remove Location
               </button>
             )}

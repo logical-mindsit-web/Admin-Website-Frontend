@@ -1,20 +1,6 @@
 import React, { useState } from "react";
 import axios from "../utils/api";
-import {
-  TextField,
-  Button,
-  Typography,
-  IconButton,
-  InputAdornment,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Snackbar,
-  Alert,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const CreateAdmin = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +14,7 @@ const CreateAdmin = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const validateFields = () => {
     const errors = {};
@@ -62,7 +48,7 @@ const CreateAdmin = () => {
       return;
     }
 
-    const token = localStorage.getItem("token"); // Get token from local storage
+    const token = localStorage.getItem("token");
 
     try {
       const response = await axios.post(
@@ -92,10 +78,9 @@ const CreateAdmin = () => {
       setPhoneNumber("");
       setRole("");
       setErrors({});
-      // Navigate to home page after successful registration
       setTimeout(() => {
-        navigate("/card"); 
-      }, 3000); 
+        navigate("/card");
+      }, 3000);
     } catch (error) {
       setSnackbarMessage(
         error.response?.data?.message || "An error occurred. Please try again."
@@ -113,122 +98,123 @@ const CreateAdmin = () => {
   const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
-      <Typography variant="h4" component="h1">
-        Create Admin
-      </Typography>
+    <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ textAlign: "center" }}>Create Admin</h1>
       <form onSubmit={handleSubmit}>
-        <TextField
-          label="Name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={!!errors.name}
-          helperText={errors.name}
-        />
-        <TextField
-          label="Employee ID"
-          type="text"
-          value={employeeId}
-          onChange={(e) => setEmployeeId(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={!!errors.employeeId}
-          helperText={errors.employeeId}
-        />
-        <TextField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={!!errors.email}
-          helperText={errors.email}
-        />
-        <TextField
-          label="Phone Number"
-          type="text"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={!!errors.phoneNumber}
-          helperText={errors.phoneNumber}
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Role</InputLabel>
-          <Select
-            label="Role"
-            name="role"
+        <div style={{ marginBottom: "16px" }}>
+          <label>Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+          />
+          <div style={{ color: "red", fontSize: "12px" }}>{errors.name}</div>
+        </div>
+
+        <div style={{ marginBottom: "16px" }}>
+          <label>Employee ID</label>
+          <input
+            type="text"
+            value={employeeId}
+            onChange={(e) => setEmployeeId(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+          />
+          <div style={{ color: "red", fontSize: "12px" }}>{errors.employeeId}</div>
+        </div>
+
+        <div style={{ marginBottom: "16px" }}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+          />
+          <div style={{ color: "red", fontSize: "12px" }}>{errors.email}</div>
+        </div>
+
+        <div style={{ marginBottom: "16px" }}>
+          <label>Phone Number</label>
+          <input
+            type="text"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+          />
+          <div style={{ color: "red", fontSize: "12px" }}>{errors.phoneNumber}</div>
+        </div>
+
+        <div style={{ marginBottom: "16px" }}>
+          <label>Role</label>
+          <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            required
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
           >
-            <MenuItem value="Hr">HR</MenuItem>
-            <MenuItem value="ProjectManager">Project Manager</MenuItem>
-            <MenuItem value="AdminController">Admin Controller</MenuItem>
-          </Select>
-        </FormControl>
+            <option value="">Select Role</option>
+            <option value="Hr">HR</option>
+            <option value="ProjectManager">Project Manager</option>
+            <option value="AdminController">Admin Controller</option>
+          </select>
+        </div>
 
-        <TextField
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={password.length > 0 && password.length < 8}
-          helperText={
-            password.length > 0 && password.length < 8
-              ? "Password must be at least 8 characters"
-              : ""
-          }
-        />
-        <Button
+        <div style={{ marginBottom: "16px" }}>
+          <label>Password</label>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+          />
+          <button
+            type="button"
+            onClick={handleClickShowPassword}
+            style={{
+              marginLeft: "8px",
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+          <div style={{ color: "red", fontSize: "12px" }}>
+            {password.length > 0 && password.length < 8 && "Password must be at least 8 characters"}
+          </div>
+        </div>
+
+        <button
           type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          style={{ marginTop: "16px" }}
+          style={{
+            width: "100%",
+            padding: "10px",
+            backgroundColor: "#007BFF",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
         >
           Register
-        </Button>
+        </button>
       </form>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+      {snackbarOpen && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "16px",
+            right: "16px",
+            backgroundColor: snackbarSeverity === "success" ? "green" : "red",
+            color: "white",
+            padding: "10px",
+            borderRadius: "4px",
+          }}
         >
           {snackbarMessage}
-        </Alert>
-      </Snackbar>
+        </div>
+      )}
     </div>
   );
 };
