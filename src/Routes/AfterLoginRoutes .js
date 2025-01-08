@@ -42,9 +42,9 @@ import Uplodeimage from "../ModelImages/uplodeimage"
 import Viewimage from "../ModelImages/viewimage"
 
 import Employeecard from "../Employeedata/Employeecard"
-import EmployeeTable from "../Employeedata/EmployeeFiles/EmployeeTable"
+import EmployeeTable from "../Employeedata/EmployeeFiles/EmployeeIdTable"
 import EmployeeIdForm from "../Employeedata/EmployeeFiles/EmployeeIdForm"
-import TicketForm from "../Employeedata/EmployeeFiles/TicketForm"
+import TicketForm from "../Employeedata/EmployeeFiles/EnterTicketForm"
 import EmployeeList from "../Employeedata/EmployeeFiles/EmployeeTicketsList"
 
 import Dashboard from "../RobotAnalyticsGraph/Dashboard"
