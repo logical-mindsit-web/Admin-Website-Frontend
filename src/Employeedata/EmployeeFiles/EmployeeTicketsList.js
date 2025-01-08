@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useCallback} from "react";
 import axios from "../../utils/apiticket";
 
 const UserTicketsList = () => {
@@ -8,6 +8,9 @@ const UserTicketsList = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [employeeCount, setEmployeeCount] = useState(0);
   const [noDataMessage, setNoDataMessage] = useState("");
+  const [notUpdatedCount, setNotUpdatedCount] = useState(0);
+  const [notUpdatedEmployeeIds, setNotUpdatedEmployeeIds] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const fetchTickets = async (date) => {
     try {
@@ -34,6 +37,23 @@ const UserTicketsList = () => {
     }
   };
 
+  const fetchNotUpdatedCount = useCallback(async (updatedCount) => {
+    try {
+      const response = await axios.get("/employee-ids");
+      const totalEmployeeCount = response.data.data.length;
+      setNotUpdatedCount(totalEmployeeCount - updatedCount);
+
+      const updatedEmployeeIds = new Set(tickets.map((ticket) => ticket.employeeId));
+      const allEmployeeIds = response.data.data.map((employee) => employee.employeeId);
+      const notUpdatedEmployeeIds = allEmployeeIds.filter(
+        (employeeId) => !updatedEmployeeIds.has(employeeId)
+      );
+      setNotUpdatedEmployeeIds(notUpdatedEmployeeIds);
+    } catch (error) {
+      console.error("Error fetching total employee count:", error);
+    }
+  }, [tickets]);
+
   useEffect(() => {
     fetchTickets(selectedDate);
   }, [selectedDate]);
@@ -41,17 +61,19 @@ const UserTicketsList = () => {
   useEffect(() => {
     if (tickets.length === 0) {
       setEmployeeCount(0);
+      setNotUpdatedCount(0);
     } else {
-      const uniqueEmployeeIds = new Set(
-        tickets.map((ticket) => ticket.employeeId)
-      );
+      const uniqueEmployeeIds = new Set(tickets.map((ticket) => ticket.employeeId));
       setEmployeeCount(uniqueEmployeeIds.size);
+      fetchNotUpdatedCount(uniqueEmployeeIds.size);
     }
-  }, [tickets]);
+  }, [tickets, fetchNotUpdatedCount]);
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
   };
+  const handlePopupOpen = () => setShowPopup(true);
+  const handlePopupClose = () => setShowPopup(false);
 
   if (loading) {
     return (
@@ -88,12 +110,11 @@ const UserTicketsList = () => {
     <div style={{ padding: "20px" }}>
       <h2
         style={{
-          color: "black", // Green text color
-          padding: "10px 20px", // Padding for the heading
-          borderRadius: "5px", // Rounded corners
+          color: "black", 
+          alignItems:"center"
         }}
       >
-        Employee Tickets & Updates
+       Employee daily Updates
       </h2>
 
       {/* Display Employee Count only when a date is selected */}
@@ -103,13 +124,33 @@ const UserTicketsList = () => {
             position: "absolute",
             top: "20px",
             right: "20px",
-            background: "#f0f0f0",
-            padding: "10px",
-            borderRadius: "5px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
           }}
         >
-          <strong>Employees: {employeeCount}</strong>
+          <div
+            style={{
+              background: "#f0f0f0",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+             <strong> Updated Employees: {employeeCount}</strong>
+          </div>
+          <div
+            onClick={handlePopupOpen}
+            style={{
+              background: "#f0f0f0",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              cursor: "pointer",
+            }}
+          >
+              <strong>Not Updated Employees: {notUpdatedCount}</strong>
+          </div>
         </div>
       )}
 
@@ -183,6 +224,57 @@ const UserTicketsList = () => {
           </div>
         ))}
       </div>
+            {/* Custom Popup */}
+            {showPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "#fff",
+            padding: "20px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+            borderRadius: "8px",
+            zIndex: 1000,
+          }}
+        >
+          <strong variant="h6">Not Updated Employees</strong>
+          <ul>
+            {notUpdatedEmployeeIds.map((id, index) => (
+              <li key={index}>{id}</li>
+            ))}
+          </ul>
+          <button
+            onClick={handlePopupClose}
+            style={{
+              marginTop: "10px",
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              padding: "5px 10px",
+              borderRadius: "4px",
+            }}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* Overlay */}
+      {showPopup && (
+        <div
+          onClick={handlePopupClose}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999,
+          }}
+        />
+      )}
     </div>
   );
 };
