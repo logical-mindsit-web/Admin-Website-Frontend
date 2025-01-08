@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useCallback} from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "../../utils/apiticket";
 
 const UserTicketsList = () => {
@@ -37,22 +37,29 @@ const UserTicketsList = () => {
     }
   };
 
-  const fetchNotUpdatedCount = useCallback(async (updatedCount) => {
-    try {
-      const response = await axios.get("/employee-ids");
-      const totalEmployeeCount = response.data.data.length;
-      setNotUpdatedCount(totalEmployeeCount - updatedCount);
+  const fetchNotUpdatedCount = useCallback(
+    async (updatedCount) => {
+      try {
+        const response = await axios.get("/employee-ids");
+        const totalEmployeeCount = response.data.data.length;
+        setNotUpdatedCount(totalEmployeeCount - updatedCount);
 
-      const updatedEmployeeIds = new Set(tickets.map((ticket) => ticket.employeeId));
-      const allEmployeeIds = response.data.data.map((employee) => employee.employeeId);
-      const notUpdatedEmployeeIds = allEmployeeIds.filter(
-        (employeeId) => !updatedEmployeeIds.has(employeeId)
-      );
-      setNotUpdatedEmployeeIds(notUpdatedEmployeeIds);
-    } catch (error) {
-      console.error("Error fetching total employee count:", error);
-    }
-  }, [tickets]);
+        const updatedEmployeeIds = new Set(
+          tickets.map((ticket) => ticket.employeeId)
+        );
+        const allEmployeeIds = response.data.data.map(
+          (employee) => employee.employeeId
+        );
+        const notUpdatedEmployeeIds = allEmployeeIds.filter(
+          (employeeId) => !updatedEmployeeIds.has(employeeId)
+        );
+        setNotUpdatedEmployeeIds(notUpdatedEmployeeIds);
+      } catch (error) {
+        console.error("Error fetching total employee count:", error);
+      }
+    },
+    [tickets]
+  );
 
   useEffect(() => {
     fetchTickets(selectedDate);
@@ -63,7 +70,9 @@ const UserTicketsList = () => {
       setEmployeeCount(0);
       setNotUpdatedCount(0);
     } else {
-      const uniqueEmployeeIds = new Set(tickets.map((ticket) => ticket.employeeId));
+      const uniqueEmployeeIds = new Set(
+        tickets.map((ticket) => ticket.employeeId)
+      );
       setEmployeeCount(uniqueEmployeeIds.size);
       fetchNotUpdatedCount(uniqueEmployeeIds.size);
     }
@@ -110,11 +119,11 @@ const UserTicketsList = () => {
     <div style={{ padding: "20px" }}>
       <h2
         style={{
-          color: "black", 
-          alignItems:"center"
+          color: "black",
+          alignItems: "center",
         }}
       >
-       Employee daily Updates
+        Employee daily Updates
       </h2>
 
       {/* Display Employee Count only when a date is selected */}
@@ -137,19 +146,19 @@ const UserTicketsList = () => {
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             }}
           >
-             <strong> Updated Employees: {employeeCount}</strong>
+            <strong> Updated Employees: {employeeCount}</strong>
           </div>
           <div
-            onClick={handlePopupOpen}
+            onClick={notUpdatedCount > 0 ? handlePopupOpen : null}
             style={{
               background: "#f0f0f0",
               padding: "10px",
               borderRadius: "5px",
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              cursor: "pointer",
+              cursor: notUpdatedCount > 0 ? "pointer" : "not-allowed",
             }}
           >
-              <strong>Not Updated Employees: {notUpdatedCount}</strong>
+            <strong>Not Updated Employees: {notUpdatedCount}</strong>
           </div>
         </div>
       )}
@@ -224,8 +233,8 @@ const UserTicketsList = () => {
           </div>
         ))}
       </div>
-            {/* Custom Popup */}
-            {showPopup && (
+      {/* Custom Popup */}
+      {showPopup && (
         <div
           style={{
             position: "fixed",
