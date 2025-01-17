@@ -12,6 +12,7 @@ import {
   Alert,
   Button,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { Download as DownloadIcon } from "@mui/icons-material"; // MUI icon for download
@@ -20,6 +21,7 @@ const SessionsTable = () => {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadingStatus, setLoadingStatus] = useState({}); // New state for loading status of each session
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
@@ -42,6 +44,7 @@ const SessionsTable = () => {
   }, []);
 
   const handleConfirm = async (sessionId) => {
+    setLoadingStatus((prev) => ({ ...prev, [sessionId]: "confirming" })); // Set loading state to confirming
     try {
       const response = await axios.patch("/sessions/status", {
         sessionId,
@@ -63,10 +66,13 @@ const SessionsTable = () => {
       }
     } catch (error) {
       console.error("Error confirming session:", error.message);
+    } finally {
+      setLoadingStatus((prev) => ({ ...prev, [sessionId]: "" })); // Reset loading state after request is completed
     }
   };
 
   const handleReject = async (sessionId) => {
+    setLoadingStatus((prev) => ({ ...prev, [sessionId]: "rejecting" })); // Set loading state to rejecting
     try {
       const response = await axios.patch("/sessions/status", {
         sessionId,
@@ -88,6 +94,8 @@ const SessionsTable = () => {
       }
     } catch (error) {
       console.error("Error rejecting session:", error.message);
+    } finally {
+      setLoadingStatus((prev) => ({ ...prev, [sessionId]: "" })); // Reset loading state after request is completed
     }
   };
 
@@ -152,33 +160,21 @@ const SessionsTable = () => {
       </Alert>
     );
 
-  if (sessions.length === 0) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          flexDirection: "column",
-        }}
-      >
-        <Typography variant="h6" color="textSecondary">
-          No data available.
-        </Typography>
-      </div>
-    );
-  }
-
   const cellStyle = {
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    maxWidth: "150px",
+    maxWidth: "170px",
     border: "1px solid #ccc",
     padding: "8px",
     fontSize: "14px",
     textAlign: "center",
+  };
+
+  const statusCellStyle = {
+    ...cellStyle,
+    width: "200px", // Fixed width for the status column to avoid table size change
+    minHeight: "36px", // Ensure consistent height for status content
   };
 
   const headerStyle = {
@@ -200,7 +196,7 @@ const SessionsTable = () => {
         <Typography variant="h4" gutterBottom>
           Sessions List
         </Typography>
-        <IconButton onClick={downloadCSV} color="primary" disabled={sessions.length === 0}>
+        <IconButton onClick={downloadCSV} color="primary">
           <DownloadIcon />
         </IconButton>
       </div>
@@ -247,8 +243,11 @@ const SessionsTable = () => {
                     "en-GB"
                   )}
                 </TableCell>
-                <TableCell style={cellStyle}>
-                  {session.customer.status === "pending" && (
+                <TableCell style={statusCellStyle}>
+                  {loadingStatus[session._id] === "confirming" ||
+                  loadingStatus[session._id] === "rejecting" ? (
+                    <CircularProgress size={24} />
+                  ) : session.customer.status === "pending" ? (
                     <>
                       <Button
                         variant="contained"
@@ -274,13 +273,11 @@ const SessionsTable = () => {
                         Reject
                       </Button>
                     </>
-                  )}
-                  {session.customer.status === "conformed" && (
+                  ) : session.customer.status === "conformed" ? (
                     <Typography variant="body2" color="success.main">
                       Confirmed
                     </Typography>
-                  )}
-                  {session.customer.status === "rejected" && (
+                  ) : (
                     <Typography variant="body2" color="error.main">
                       Rejected
                     </Typography>

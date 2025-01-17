@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./BookSession.css";
 import moment from "moment";
+
 export default function BookSession() {
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");

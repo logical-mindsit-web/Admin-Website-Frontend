@@ -1,20 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Paper,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
 import axios from "../../utils/api";
 import { useParams } from "react-router-dom";
 
@@ -40,7 +24,6 @@ const RobotVersionList2 = () => {
           },
         });
         setAppDetails(response.data);
-        // Initialize state with current values
         setManualMapping(response.data.user.manualMapping);
         setObjectDisinfection(response.data.user.objectDisinfection);
       } catch (error) {
@@ -65,14 +48,13 @@ const RobotVersionList2 = () => {
         },
       });
 
-      // Optionally, fetch updated app details
       const response = await axios.get(`/appdetails/${decodedEmail}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       setAppDetails(response.data);
-      handleCloseDialog(); // Close the dialog after successful update
+      handleCloseDialog();
     } catch (error) {
       console.error("Error updating user settings:", error);
     }
@@ -105,77 +87,120 @@ const RobotVersionList2 = () => {
   }
 
   return (
-    <Box sx={{ padding: 3, marginTop: 3 }}>
-      <Paper elevation={3} sx={{ padding: 4, borderRadius: 2 }}>
-        <Typography
-          variant="h5"
-          component="h2"
-          sx={{ marginBottom: 3, fontWeight: "bold", color: "#333" }}
-        >
+    <div style={{ padding: "20px", marginTop: "30px" }}>
+      <div style={{ padding: "30px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0,0,0,0.1)", backgroundColor: "#fff" }}>
+        <h2 style={{ marginBottom: "20px", fontWeight: "bold", color: "#333" }}>
           Robot Metadata Details
-        </Typography>
-        <Card sx={{ boxShadow: "0 4px 8px rgba(0,0,0,0.1)", backgroundColor: "#e0f7fa" }}>
-          <CardContent>
-            <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-              Email ID: {appDetails.user.email}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-              Version: {appDetails.version}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-              Manual Mapping: {appDetails.user.manualMapping}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-              Object Disinfection: {appDetails.user.objectDisinfection}
-            </Typography>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog}>
-              Update
-            </Button>
-          </CardContent>
-        </Card>
-      </Paper>
+        </h2>
+        <div style={{ boxShadow: "0 4px 8px rgba(0,0,0,0.1)", backgroundColor: "#e0f7fa", padding: "20px" }}>
+          <div style={{ marginBottom: "10px" }}>
+            <strong>Email ID:</strong> {appDetails.user.email}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <strong>Version:</strong> {appDetails.version}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <strong>Manual Mapping:</strong> {appDetails.user.manualMapping}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <strong>Object Disinfection:</strong> {appDetails.user.objectDisinfection}
+          </div>
+          <button
+            onClick={handleOpenDialog}
+            style={{
+              backgroundColor: "#3f51b5",
+              color: "#fff",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Update
+          </button>
+        </div>
+      </div>
 
       {/* Dialog for updating settings */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Update Robot Settings</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth margin="dense">
-            <InputLabel id="manual-mapping-label">Manual Mapping</InputLabel>
-            <Select
-              labelId="manual-mapping-label"
-              value={manualMapping}
-              onChange={(e) => setManualMapping(e.target.value)}
-              variant="outlined"
-            >
-              <MenuItem value="enabled">Enabled</MenuItem>
-              <MenuItem value="disabled">Disabled</MenuItem>
-              {/* Add more options as needed */}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth margin="dense">
-            <InputLabel id="object-disinfection-label">Object Disinfection</InputLabel>
-            <Select
-              labelId="object-disinfection-label"
-              value={objectDisinfection}
-              onChange={(e) => setObjectDisinfection(e.target.value)}
-              variant="outlined"
-            >
-              <MenuItem value="enabled">Enabled</MenuItem>
-              <MenuItem value="disabled">Disabled</MenuItem>
-              {/* Add more options as needed */}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {dialogOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Dimming the background
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "10px",
+              width: "400px",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+          >
+            <h3>Update Robot Settings</h3>
+            <div style={{ marginBottom: "15px" }}>
+              <label>Manual Mapping</label>
+              <select
+                value={manualMapping}
+                onChange={(e) => setManualMapping(e.target.value)}
+                style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              >
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: "15px" }}>
+              <label>Object Disinfection</label>
+              <select
+                value={objectDisinfection}
+                onChange={(e) => setObjectDisinfection(e.target.value)}
+                style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+              >
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button
+                onClick={handleCloseDialog}
+                style={{
+                  backgroundColor: "#f44336",
+                  color: "#fff",
+                  padding: "8px 16px",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                style={{
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  padding: "8px 16px",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

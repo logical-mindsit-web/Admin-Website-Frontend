@@ -2,8 +2,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
-  //baseURL: 'http://localhost:5000',
-   baseURL: 'https://admin-website-backend.onrender.com',
+  //baseURL: 'http://localhost:8080',
+  baseURL: 'https://admin-website-backend.onrender.com',
 });
 
 // Add request interceptor

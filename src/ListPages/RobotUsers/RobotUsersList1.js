@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from '../../utils/api';
-import { Card, CardContent, Typography, Grid, Paper, Box } from "@mui/material";
+import { Card, CardContent, Typography, Grid, Paper, Box,IconButton} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import "./loadingStyles.css";
 
@@ -49,9 +50,19 @@ const UserList = () => {
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", minHeight: '100vh' }}>
       <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, backgroundColor: "#fff", boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
-        <Typography variant="h4" component="h1" sx={{ marginBottom: 3, fontWeight: "bold", color: "#333" }}>
-          Select a User to View Their Robots
+        <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        style={{ marginBottom: "16px" }}
+      >
+        <IconButton onClick={() => navigate(-1)}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color: "#333" }}>
+        Select a User to View Their Robots
         </Typography>
+      </Box>
         <Grid container spacing={3}>
           {emails.map((email, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>

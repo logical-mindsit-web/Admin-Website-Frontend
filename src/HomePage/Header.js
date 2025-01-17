@@ -1,30 +1,45 @@
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from '../utils/api';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "../utils/api";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userDetails, setUserDetails] = useState({ email: null, name: null, role: null });
+  const [userDetails, setUserDetails] = useState({
+    email: null,
+    name: null,
+    role: null,
+  });
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); 
-    
+    setIsLoggedIn(!!token);
+
     if (token) {
       const fetchUserDetails = async () => {
         try {
-          const email = localStorage.getItem('email');
-          const response = await axios.get(`admin-details/${email}`,{
+          const email = localStorage.getItem("email");
+          const response = await axios.get(`admin-details/${email}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
 
-          setUserDetails({ email: response.data.email, name: response.data.name, role: response.data.role });
+          setUserDetails({
+            email: response.data.email,
+            name: response.data.name,
+            role: response.data.role,
+          });
         } catch (error) {
-          console.error('Error fetching details:', error);
+          console.error("Error fetching details:", error);
         }
       };
 
@@ -37,15 +52,15 @@ const Header = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("email");
     setIsLoggedIn(false);
-    window.location.href = "https://spotless-ai.s3.ap-south-1.amazonaws.com/SpotlessAI-Website/index.html";
-     };
+    window.location.href = "/";
+  };
 
   const handleProfileClick = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       setOpenDialog(true);
     } else {
-      alert('Please login to show profile');
+      alert("Please login to show profile");
     }
   };
 
@@ -59,7 +74,7 @@ const Header = () => {
         <div style={styles.logo}>
           <Link to="/card">
             <img
-                src="/logo.png"
+              src="/logo.png"
               alt="SpotlessAI Logo"
               style={styles.logoImage}
             />
@@ -69,25 +84,32 @@ const Header = () => {
           <ul style={styles.navList}>
             <li style={styles.navItem}>
               <Link to="/Employeecard" style={styles.navLink}>
-               Employee Data
+                Employee Data
               </Link>
             </li>
             <li style={styles.navItem}>
               <Link to="/card-global" style={styles.navLink}>
-               Global Settings
+                Global Settings
               </Link>
             </li>
             <li style={styles.navItem}>
-              <span onClick={handleProfileClick} style={{ cursor: 'pointer', color: '#00448e', textDecoration: 'none', fontSize: '1rem' }}>
-                {userDetails.name ? `${userDetails.name} (${userDetails.role})`: 'Profile'}
+              <span
+                onClick={handleProfileClick}
+                style={{
+                  cursor: "pointer",
+                  color: "#00448e",
+                  textDecoration: "none",
+                  fontSize: "1rem",
+                }}
+              >
+                {userDetails.name
+                  ? `${userDetails.name} (${userDetails.role})`
+                  : "Profile"}
               </span>
             </li>
           </ul>
           {isLoggedIn && (
-            <Button
-              style={styles.getStartedButton}
-              onClick={handleLogout}
-            >
+            <Button style={styles.getStartedButton} onClick={handleLogout}>
               Logout
             </Button>
           )}
@@ -95,11 +117,13 @@ const Header = () => {
       </div>
 
       <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle>User Admin Profile</DialogTitle>
-        <DialogContent>
+      <DialogTitle sx={{ color: 'black' }}>Admin Profile</DialogTitle>
+      <DialogContent>
           <DialogContentText>
-            Name: {userDetails.name}<br />
-            Email: {userDetails.email}<br />
+            Name: {userDetails.name}
+            <br />
+            Email: {userDetails.email}
+            <br />
             Role: {userDetails.role}
           </DialogContentText>
         </DialogContent>
@@ -118,15 +142,18 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    background: "linear-gradient(to right, #00448e6, #9C15F7, rgba(255, 75, 248, 0.3))",  // Gradient with 3 colors
+    background:
+      "linear-gradient(to right, #00448e6, #9C15F7, rgba(255, 75, 248, 0.3))", // Gradient with 3 colors
   },
   headerBottom: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: "1rem 2rem",
-    background: "linear-gradient(to right, #00448e6, #9C15F7, rgba(255, 75, 248, 0.3))",  // Gradient with 3 colors
+    background:
+      "linear-gradient(to right, #00448e6, #9C15F7, rgba(255, 75, 248, 0.3))", // Gradient with 3 colors
     boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+    flexWrap: "wrap", // Allow items to wrap on smaller screens
   },
   logo: {
     display: "flex",
@@ -138,6 +165,7 @@ const styles = {
   nav: {
     display: "flex",
     alignItems: "center",
+    flexWrap: "wrap", // Allow navigation items to wrap on smaller screens
   },
   navList: {
     listStyle: "none",
@@ -163,6 +191,26 @@ const styles = {
     cursor: "pointer",
     marginLeft: "1rem",
     textDecoration: "none",
+  },
+
+  // Media queries for responsiveness
+  "@media screen and (max-width: 768px)": {
+    header: {
+      padding: "0.5rem 1rem",
+    },
+    headerBottom: {
+      flexDirection: "column", // Stack items vertically on small screens
+      padding: "1rem",
+    },
+    navList: {
+      flexDirection: "column", // Stack navigation items vertically
+      gap: "1rem",
+      textAlign: "center", // Center align text on small screens
+    },
+    getStartedButton: {
+      marginLeft: 0,
+      marginTop: "1rem", // Add space between logout button and navigation items
+    },
   },
 };
 

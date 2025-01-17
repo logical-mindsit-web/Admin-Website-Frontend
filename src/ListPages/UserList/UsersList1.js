@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import axios from '../../utils/api';
+import axios from "../../utils/api";
 import {
   Card,
   CardContent,
   Typography,
   Button,
   Grid,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Snackbar,
   Alert,
+  IconButton,
+  Box,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 import { useNavigate } from "react-router-dom";
 import "./loadingStyles.css";
 
@@ -122,7 +121,7 @@ const UsersList = () => {
     setOpenDialog(false);
     setSelectedUser(null);
     setNewEmail("");
-    setEmailError(""); 
+    setEmailError("");
   };
 
   const handleSnackbarClose = () => {
@@ -150,16 +149,32 @@ const UsersList = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <Typography variant="h4" component="h1" align="center">
-        User's List
-      </Typography>
+       <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        style={{ marginBottom: "16px" }}
+      >
+        <IconButton onClick={() => navigate(-1)}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4" component="h2" color="black">
+          User's List
+        </Typography>
+      </Box>
       <Grid container spacing={3} style={{ marginTop: "20px" }}>
         {users.map((user) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={user._id}>
-            <Card onDoubleClick={() => navigate(`/user-details/${encodeEmail(user.email)}`)} style={{ cursor: 'pointer' }}>
+            <Card
+              onDoubleClick={() =>
+                navigate(`/user-details/${encodeEmail(user.email)}`)
+              }
+              style={{ cursor: "pointer" }}
+            >
               <CardContent>
                 <Typography style={{ fontSize: "0.9rem", marginBottom: "4px" }}>
-                  <strong>UserName:</strong>{user.name || "N/A"}
+                  <strong>UserName:</strong>
+                  {user.name || "N/A"}
                 </Typography>
                 <Typography
                   variant="subtitle2"
@@ -209,42 +224,113 @@ const UsersList = () => {
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={closeUpdateDialog}>
-        <DialogTitle>Update User Email</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="New Email"
-            type="email"
-            fullWidth
-            value={newEmail}
-            onChange={(e) => {
-              setNewEmail(e.target.value);
-              setEmailError(""); // Clear error message on input change
+      {openDialog && (
+  <>
+    {/* Overlay for background blocking */}
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Gray overlay
+        zIndex: 999, // Ensure overlay is on top
+      }}
+    ></div>
+
+    {/* Dialog */}
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000, // Ensure dialog is on top of overlay
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: "20px",
+          borderRadius: "8px",
+          width: "400px",
+        }}
+      >
+        <h3 style={{ color: "black" }}>Update User Email</h3>
+        <input
+          type="email"
+          value={newEmail}
+          onChange={(e) => {
+            setNewEmail(e.target.value);
+            setEmailError("");
+          }}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            border: emailError ? "1px solid red" : "1px solid #ccc",
+            borderRadius: "4px",
+          }}
+          placeholder="New Email"
+        />
+        {emailError && (
+          <p style={{ color: "red", margin: 0 }}>{emailError}</p>
+        )}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: "10px",
+          }}
+        >
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "gray",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              marginRight: "10px",
             }}
-            error={!!emailError} // Display red border if there's an error
-            helperText={emailError} // Display error message below the text field
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeUpdateDialog} color="secondary">
+            onClick={closeUpdateDialog}
+          >
             Cancel
-          </Button>
-          <Button onClick={handleUpdateEmail} color="primary">
+          </button>
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+            }}
+            onClick={handleUpdateEmail}
+          >
             Update
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
+)}
 
       {/* Snackbar for success messages */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} // Positioning the Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Positioning the Snackbar
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

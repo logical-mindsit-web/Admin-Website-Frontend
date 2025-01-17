@@ -79,7 +79,7 @@ const CreateAdmin = () => {
       setRole("");
       setErrors({});
       setTimeout(() => {
-        navigate("/card");
+        navigate("/admin-user");
       }, 3000);
     } catch (error) {
       setSnackbarMessage(
@@ -90,12 +90,7 @@ const CreateAdmin = () => {
     }
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
     <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -150,7 +145,7 @@ const CreateAdmin = () => {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
+            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box",borderRadius: "5px", }}
           >
             <option value="">Select Role</option>
             <option value="Hr">HR</option>
@@ -159,28 +154,43 @@ const CreateAdmin = () => {
           </select>
         </div>
 
-        <div style={{ marginBottom: "16px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "10px",
+          }}
+        >
           <label>Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "8px", boxSizing: "border-box" }}
-          />
-          <button
-            type="button"
-            onClick={handleClickShowPassword}
-            style={{
-              marginLeft: "8px",
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-          <div style={{ color: "red", fontSize: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "5px",
+                width: "350px",
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleClickShowPassword}
+              style={{
+                padding: "10px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                borderRadius: "5px",
+                border: "none",
+              }}
+            >
+              {showPassword ? "Hide" : "Show"} Password
+            </button>
+            <div style={{ color: "red", fontSize: "12px" }}>
             {password.length > 0 && password.length < 8 && "Password must be at least 8 characters"}
+          </div>
           </div>
         </div>
 
@@ -194,6 +204,8 @@ const CreateAdmin = () => {
             border: "none",
             cursor: "pointer",
             fontSize: "16px",
+            marginTop: "20px",
+            borderRadius: "5px",
           }}
         >
           Register

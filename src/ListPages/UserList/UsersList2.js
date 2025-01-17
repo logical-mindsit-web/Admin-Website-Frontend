@@ -11,15 +11,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   CircularProgress,
-  IconButton,
-  InputAdornment,
   Snackbar,
   Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FaTrash } from "react-icons/fa";
 
 const UsersDetailsList = () => {
   const { email } = useParams();
@@ -124,10 +121,15 @@ const UsersDetailsList = () => {
       ...prev,
       locations: [
         ...prev.locations,
-        { name: "", address: {}, subLocations: [] },
+        { 
+          name: "", 
+          address: { street: "", town: "", city: "", state: "", pinCode: "" }, 
+          subLocations: [{ name: "" }]  
+        },
       ],
     }));
   };
+  
 
   const handleAddSubLocation = (locationIndex) => {
     const newLocations = [...updatedUser.locations];
@@ -139,6 +141,9 @@ const UsersDetailsList = () => {
   };
 
   const handleRemoveSubLocation = (locationIndex, subLocationIndex) => {
+  if (subLocationIndex === 0) {
+    return;
+  }
     const newLocations = [...updatedUser.locations];
     newLocations[locationIndex].subLocations.splice(subLocationIndex, 1);
     setUpdatedUser((prev) => ({
@@ -186,17 +191,24 @@ const UsersDetailsList = () => {
       return;
     }
     if (!emailRegex.test(updatedUser.primaryContact.email)) {
-      setSnackbarMessage("Please enter a valid email address for primary contact.");
+      setSnackbarMessage(
+        "Please enter a valid email address for primary contact."
+      );
       setSnackbarOpen(true);
       return;
     }
-  
-    if (updatedUser.primaryContact.phoneNumber && !phoneNumberRegex.test(updatedUser.primaryContact.phoneNumber)) {
-      setSnackbarMessage("Please enter a valid phone number for primary contact.");
+
+    if (
+      updatedUser.primaryContact.phoneNumber &&
+      !phoneNumberRegex.test(updatedUser.primaryContact.phoneNumber)
+    ) {
+      setSnackbarMessage(
+        "Please enter a valid phone number for primary contact."
+      );
       setSnackbarOpen(true);
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem("token");
@@ -402,142 +414,226 @@ const UsersDetailsList = () => {
 
       {/* Update User Details Dialog */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update User Details</DialogTitle>
+        <DialogTitle style={{ color: '#1976d2' }}>Update User Details</DialogTitle>
         <DialogContent>
-          <TextField
-            label="User Name"
-            name="name"
-            fullWidth
-            value={updatedUser.name}
-            onChange={handleChange}
-            margin="normal"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            fullWidth
-            value={updatedUser.email}
-            onChange={handleChange}
-            margin="normal"
-          />
-          <TextField
-            label="Phone Number"
-            name="phoneNumber"
-            fullWidth
-            value={updatedUser.phoneNumber}
-            onChange={handleChange}
-            margin="normal"
-          />
-          <TextField
-            label="IPAddress"
-            name="IPAddress"
-            fullWidth
-            value={updatedUser.IPAddress}
-            onChange={handleChange}
-            margin="normal"
-          />
-          <TextField
-            label="Organization Name"
-            name="organizationName"
-            fullWidth
-            value={updatedUser.organizationName}
-            onChange={handleChange}
-            margin="normal"
-          />
-          <TextField
-            label="Primary Contact Name"
-            name="name"
-            fullWidth
-            value={updatedUser.primaryContact.name}
-            onChange={handlePrimaryContactChange}
-            margin="normal"
-          />
-          <TextField
-            label="Primary Contact Email"
-            name="email"
-            fullWidth
-            value={updatedUser.primaryContact.email}
-            onChange={handlePrimaryContactChange}
-            margin="normal"
-          />
-          <TextField
-            label="Primary Contact Phone Number"
-            name="phoneNumber"
-            fullWidth
-            value={updatedUser.primaryContact.phoneNumber}
-            onChange={handlePrimaryContactChange}
-            margin="normal"
-          />
+          <div style={{ marginBottom: "16px" }}>
+            <label>User Name</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="User Name"
+              name="name"
+              value={updatedUser.name}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Email</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Email"
+              name="email"
+              value={updatedUser.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Phone Number</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Phone Number"
+              name="phoneNumber"
+              value={updatedUser.phoneNumber}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>IPAddress</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="IPAddress"
+              name="IPAddress"
+              value={updatedUser.IPAddress}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Organization Name</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Organization Name"
+              name="organizationName"
+              value={updatedUser.organizationName}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Primary Contact Name</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Primary Contact Name"
+              name="name"
+              value={updatedUser.primaryContact.name}
+              onChange={handlePrimaryContactChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Primary Contact Email</label>
+            <input
+              className="input-field"
+              type="email"
+              placeholder="Primary Contact Email"
+              name="email"
+              value={updatedUser.primaryContact.email}
+              onChange={handlePrimaryContactChange}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>Primary Contact Phone Number</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="Primary Contact Phone Number"
+              name="phoneNumber"
+              value={updatedUser.primaryContact.phoneNumber}
+              onChange={handlePrimaryContactChange}
+            />
+          </div>
+
           {updatedUser.locations &&
             updatedUser.locations.map((location, locationIndex) => (
               <div key={locationIndex} style={{ marginBottom: "16px" }}>
-                <TextField
-                  label="Location Name"
-                  name="name"
-                  fullWidth
-                  value={location.name}
-                  onChange={(e) => handleLocationChange(locationIndex, e)}
-                  margin="normal"
-                />
-                <TextField
-                  label="Street"
-                  name="street"
-                  fullWidth
-                  value={location.address.street}
-                  onChange={(e) =>
-                    handleAddressChange(locationIndex, "street", e)
-                  }
-                  margin="normal"
-                />
-                <TextField
-                  label="Town"
-                  name="town"
-                  fullWidth
-                  value={location.address.town}
-                  onChange={(e) =>
-                    handleAddressChange(locationIndex, "town", e)
-                  }
-                  margin="normal"
-                />
-                <TextField
-                  label="City"
-                  name="city"
-                  fullWidth
-                  value={location.address.city}
-                  onChange={(e) =>
-                    handleAddressChange(locationIndex, "city", e)
-                  }
-                  margin="normal"
-                />
-                <TextField
-                  label="State"
-                  name="state"
-                  fullWidth
-                  value={location.address.state}
-                  onChange={(e) =>
-                    handleAddressChange(locationIndex, "state", e)
-                  }
-                  margin="normal"
-                />
-                <TextField
-                  label="pinCode"
-                  name="pinCode"
-                  fullWidth
-                  value={location.address.pinCode}
-                  onChange={(e) =>
-                    handleAddressChange(locationIndex, "pinCode", e)
-                  }
-                  margin="normal"
-                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  marginBottom="10px"
+                >
+                  Location Details
+                </Typography>
+                <div style={{ marginBottom: "16px" }}>
+                  <label>Location Name</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="Location Name"
+                    name="name"
+                    value={location.name}
+                    onChange={(e) => handleLocationChange(locationIndex, e)}
+                  />
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label>Street</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="Street"
+                    name="street"
+                    value={location.address.street}
+                    onChange={(e) =>
+                      handleAddressChange(locationIndex, "street", e)
+                    }
+                  />
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label>Town</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="Town"
+                    name="town"
+                    value={location.address.town}
+                    onChange={(e) =>
+                      handleAddressChange(locationIndex, "town", e)
+                    }
+                  />
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label>City</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="City"
+                    name="city"
+                    value={location.address.city}
+                    onChange={(e) =>
+                      handleAddressChange(locationIndex, "city", e)
+                    }
+                  />
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label>State</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="State"
+                    name="state"
+                    value={location.address.state}
+                    onChange={(e) =>
+                      handleAddressChange(locationIndex, "state", e)
+                    }
+                  />
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label>PinCode</label>
+                  <input
+                    className="input-field"
+                    type="text"
+                    placeholder="PinCode"
+                    name="pinCode"
+                    value={location.address.pinCode}
+                    onChange={(e) =>
+                      handleAddressChange(locationIndex, "pinCode", e)
+                    }
+                  />
+                </div>
+
                 <div>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    marginBottom="10px"
+                  >
                     Sub-Locations:
                   </Typography>
+                  <div className="sub-location-text">Sub-Locations:</div>
                   {location.subLocations.map(
                     (subLocation, subLocationIndex) => (
-                      <div key={subLocationIndex}>
-                        <TextField
-                          label="Sub-location Name"
+                      <div
+                        key={subLocationIndex}
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          marginBottom: "12px",
+                        }}
+                      >
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            paddingRight: "40px" /* Space for the icon */,
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            fontSize: "16px",
+                          }}
+                          type="text"
+                          placeholder="Sub-location Name"
                           value={subLocation.name}
                           onChange={(e) =>
                             handleSubLocationChange(
@@ -546,29 +642,31 @@ const UsersDetailsList = () => {
                               e
                             )
                           }
-                          fullWidth
-                          margin="normal"
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  onClick={() =>
-                                    handleRemoveSubLocation(
-                                      locationIndex,
-                                      subLocationIndex
-                                    )
-                                  }
-                                  edge="end"
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
                         />
+                        <button
+                          onClick={() =>
+                            handleRemoveSubLocation(
+                              locationIndex,
+                              subLocationIndex
+                            )
+                          }
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                        >
+                          <FaTrash />
+                        </button>
                       </div>
                     )
                   )}
+
                   <Button
                     onClick={() => handleAddSubLocation(locationIndex)}
                     startIcon={<AddIcon />}
@@ -593,6 +691,7 @@ const UsersDetailsList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Snackbar for feedback */}
       <Snackbar
         open={snackbarOpen}

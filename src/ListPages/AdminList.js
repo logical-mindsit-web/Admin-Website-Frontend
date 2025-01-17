@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../utils/api";
 import {
   Card,
@@ -10,15 +11,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   FormControl,
   InputLabel,
   Select,
   Snackbar,
   Alert,
   MenuItem,
+  IconButton,
+  Box,
 } from "@mui/material";
 import "./loadingStyles.css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const AdminDetails = () => {
   const [admins, setAdmins] = useState([]);
@@ -34,6 +37,7 @@ const AdminDetails = () => {
   const [formErrors, setFormErrors] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -206,9 +210,20 @@ const AdminDetails = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <Typography variant="h4" component="h2">
-        Admin User's
-      </Typography>
+      <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        style={{ marginBottom: "16px" }}
+      >
+        <IconButton onClick={() => navigate(-1)}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4" component="h2" color="black">
+          Admin User's
+        </Typography>
+      </Box>
+
       <Grid container spacing={3} style={{ marginTop: "20px" }}>
         {admins.map((admin) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={admin.id}>
@@ -270,49 +285,66 @@ const AdminDetails = () => {
       </Grid>
 
       <Dialog open={openDialog} onClose={closeUpdateDialog}>
-        <DialogTitle>Update Admin Details</DialogTitle>
+        <DialogTitle style={{ color: "#1976d2" }}>
+          Update Admin Details
+        </DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="New Email"
-            type="email"
-            fullWidth
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            error={!!formErrors.email}
-            helperText={formErrors.email}
-          />
-          <TextField
-            margin="dense"
-            label="New Name"
-            type="text"
-            fullWidth
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            error={!!formErrors.name}
-            helperText={formErrors.name}
-          />
-          <TextField
-            margin="dense"
-            label="New Employee ID"
-            type="text"
-            fullWidth
-            value={newEmployeeId}
-            onChange={(e) => setNewEmployeeId(e.target.value)}
-            error={!!formErrors.employeeId}
-            helperText={formErrors.employeeId}
-          />
-          <TextField
-            margin="dense"
-            label="New Phone Number"
-            type="text"
-            fullWidth
-            value={newPhoneNumber}
-            onChange={(e) => setNewPhoneNumber(e.target.value)}
-            error={!!formErrors.phoneNumber}
-            helperText={formErrors.phoneNumber}
-          />
+          <div style={{ marginBottom: "16px" }}>
+            <label>New Email</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="New Email"
+              name="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              error={!!formErrors.email}
+              helperText={formErrors.email}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>New Name</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="New Name"
+              name="name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              error={!!formErrors.name}
+              helperText={formErrors.name}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>New Employee ID</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="New Employee ID"
+              name="employeeId"
+              value={newEmployeeId}
+              onChange={(e) => setNewEmployeeId(e.target.value)}
+              error={!!formErrors.employeeId}
+              helperText={formErrors.employeeId}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label>New Phone Number</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder="New Phone Number"
+              name="phoneNumber"
+              value={newPhoneNumber}
+              onChange={(e) => setNewPhoneNumber(e.target.value)}
+              error={!!formErrors.phoneNumber}
+              helperText={formErrors.phoneNumber}
+            />
+          </div>
+
           <FormControl fullWidth margin="dense">
             <InputLabel>New Role</InputLabel>
             <Select

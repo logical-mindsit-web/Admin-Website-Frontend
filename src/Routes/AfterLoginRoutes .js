@@ -4,7 +4,6 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import CardGrid from "../GlobalSettings/CardsGrid";
 import VersionChange from "../GlobalSettings/GlobalSettingFiles/VersionChange";
 import MetadataChange from "../GlobalSettings/GlobalSettingFiles/MetadataChange"
-import Autodissinfectanalytics from "../GlobalSettings/GlobalSettingFiles/Autodissinfectanalytics";
 
 import CreateUserPage from "../DetailsUplode/CreateUserPage";
 import CreateAdminPage from "../DetailsUplode/CreateAdminPage";
@@ -34,8 +33,9 @@ import DetailsView from "../BookingRobot/DetailsView";
 import RobotVersionList1 from "../ListPages/RobotVersion/RobotVersionList1";
 import RobotVersionList2 from "../ListPages/RobotVersion/RobotVersionList2"; 
 
-import Login from "../Login/Login.js" // login main page
-import CardGridDashboard from "../HomePage/CardGrid.js"; // dashboard
+import Login from "../Login/Login.js" 
+import CardGridDashboard from "../HomePage/CardGrid.js"; 
+import Content from "../HomePage/Content.js";
 
 import RobotImage from "../ModelImages/RobotImage"
 import Uplodeimage from "../ModelImages/uplodeimage"
@@ -47,7 +47,6 @@ import EmployeeIdForm from "../Employeedata/EmployeeFiles/EmployeeIdForm"
 import TicketForm from "../Employeedata/EmployeeFiles/EnterTicketForm"
 import EmployeeList from "../Employeedata/EmployeeFiles/EmployeeTicketsList"
 
-import Dashboard from "../RobotAnalyticsGraph/Dashboard"
 
 
 const getUserRole = () => {
@@ -81,11 +80,11 @@ const AfterLoginRoutes = () => (
     <Route path="/card-global" element={<CardGrid />} />
     <Route path="/update-Version" element={<VersionChange />} />
     <Route path="/metadata-Change" element={<MetadataChange />} />
-    <Route path="/dissnfection" element={<Autodissinfectanalytics />} />
 
 
      {/* Home page Rout */}
      <Route path="/card" element={<CardGridDashboard />} />
+     <Route path='/content' element={<Content />}/>
     <Route path="/users-list" element={<UsersList />} />
     <Route path="/user-details/:email" element={<UserDetailsList />} />
     <Route path="/update-user" element={<UpdateUser />} />
@@ -117,7 +116,6 @@ const AfterLoginRoutes = () => (
     <Route path="/Uplodeimage" element={<Uplodeimage />} />
     <Route path="/Viewimage" element={<Viewimage />} />
 
-    <Route path="/RobotAnalytics" element={<Dashboard />} />
 
     <Route path="/Employeecard" element={<Employeecard />} />
     <Route path="/EmployeeTable" element={<EmployeeTable />} />
